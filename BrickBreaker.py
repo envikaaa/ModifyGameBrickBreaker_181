@@ -18,3 +18,6 @@ PEACH = (255, 180, 150)
 DARK_PINK = (220, 80, 130)
 GREEN = (100, 200, 100)
 
+# Mengatur jenis dan ukuran tulisan
+font = pygame.font.Font('freesansbold.ttf', 15)
+
