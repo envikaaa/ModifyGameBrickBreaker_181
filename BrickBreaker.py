@@ -2,7 +2,9 @@
 import pygame
 import random
 
+# ==========================================
 # 1. INISIALISASI PYGAME
+# ==========================================
 # Mengaktifkan seluruh modul Pygame
 pygame.init()
 
@@ -29,7 +31,10 @@ pygame.display.set_caption("Peach Block Breaker")
 clock = pygame.time.Clock()
 FPS = 30
 
+
+# ==========================================
 # 2. CLASS STRIKER (PEMANTUL)
+# ==========================================
 class Striker:
     def __init__(self, posx, posy, width, height, speed, color):
         self.posx, self.posy = posx, posy
@@ -66,7 +71,10 @@ class Striker:
     def getRect(self):
         return self.strikerRect
 
+
+# ==========================================
 # 3. CLASS BLOCK (BALOK)
+# ==========================================
 class Block:
     def __init__(self, posx, posy, width, height, color):
         self.posx, self.posy = posx, posy
@@ -106,7 +114,10 @@ class Block:
     def getHealth(self):
         return self.health
 
+
+# ==========================================
 # 4. CLASS BALL (BOLA BERBENTUK PEACH)
+# ==========================================
 class Ball:
     def __init__(self, posx, posy, radius, speed, color):
         self.posx, self.posy = posx, posy
@@ -194,12 +205,18 @@ class Ball:
     def getRect(self):
         return self.ballRect
 
+
+# ==========================================
 # 5. FUNGSI PENGECEKAN TABRAKAN
+# ==========================================
 def collisionChecker(rect, ball):
     # Memeriksa apakah dua objek saling bertabrakan
     return pygame.Rect.colliderect(rect, ball)
 
+
+# ==========================================
 # 6. FUNGSI MEMBUAT BALOK
+# ==========================================
 def populateBlocks(blockWidth, blockHeight,
                    horizontalGap, verticalGap):
 
@@ -219,7 +236,10 @@ def populateBlocks(blockWidth, blockHeight,
 
     return listOfBlocks
 
+
+# ==========================================
 # 7. FUNGSI GAME OVER
+# ==========================================
 def gameOver():
     gameOver = True
 
@@ -243,7 +263,10 @@ def gameOver():
                 if event.key == pygame.K_SPACE:
                     return True
 
+
+# ==========================================
 # 8. GAME MANAGER (PROGRAM UTAMA)
+# ==========================================
 def main():
     running = True
     lives = 3
@@ -266,108 +289,124 @@ def main():
         horizontalGap, verticalGap
     )
 
+    # ======================================
     # 9. GAME LOOP
-        while running:
-            # Membersihkan layar setiap frame
-            screen.fill(BLACK)
-    
-            # Menampilkan skor dan jumlah nyawa
-            scoreText = font.render("Score : " + str(score), True, WHITE)
-            livesText = font.render("Lives : " + str(lives), True, WHITE)
-    
-            screen.blit(scoreText, (10, HEIGHT - 25))
-            screen.blit(livesText, (120, HEIGHT - 25))
-    
-            # Membuat balok baru jika semua balok sudah hancur
-            if not listOfBlocks:
+    # ======================================
+    while running:
+        # Membersihkan layar setiap frame
+        screen.fill(BLACK)
+
+        # Menampilkan skor dan jumlah nyawa
+        scoreText = font.render("Score : " + str(score), True, WHITE)
+        livesText = font.render("Lives : " + str(lives), True, WHITE)
+
+        screen.blit(scoreText, (10, HEIGHT - 25))
+        screen.blit(livesText, (120, HEIGHT - 25))
+
+        # Membuat balok baru jika semua balok sudah hancur
+        if not listOfBlocks:
+            listOfBlocks = populateBlocks(
+                blockWidth, blockHeight,
+                horizontalGap, verticalGap
+            )
+
+        # Memeriksa apakah nyawa pemain sudah habis
+        if lives <= 0:
+            running = gameOver()
+
+            # Mengatur ulang permainan
+            if running:
+                lives = 3
+                score = 0
+                ball.reset()
+                striker.posx = 250
+                striker.update(0)
+
                 listOfBlocks = populateBlocks(
                     blockWidth, blockHeight,
                     horizontalGap, verticalGap
                 )
-    
-            # Memeriksa apakah nyawa pemain sudah habis
-            if lives <= 0:
-                running = gameOver()
-    
-                # Mengatur ulang permainan
-                if running:
-                    lives = 3
-                    score = 0
-                    ball.reset()
-                    striker.posx = 250
-                    striker.update(0)
-    
-                    listOfBlocks = populateBlocks(
-                        blockWidth, blockHeight,
-                        horizontalGap, verticalGap
-                    )
-    
-            # 10. EVENT HANDLING
-            for event in pygame.event.get():
-    
-                # Keluar dari permainan
-                if event.type == pygame.QUIT:
-                    running = False
-    
-                # Menggerakkan striker ke kiri atau kanan
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        strikerXFac = -1
-    
-                    if event.key == pygame.K_RIGHT:
-                        strikerXFac = 1
-    
-                # Menghentikan striker ketika tombol dilepas
-                if event.type == pygame.KEYUP:
-                    if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
-                        strikerXFac = 0
-    
-            # 11. COLLISION CHECK (TABRAKAN)
-            # Memeriksa tabrakan antara striker dan bola
-            if collisionChecker(striker.getRect(), ball.getRect()):
+
+        # ==================================
+        # 10. EVENT HANDLING
+        # ==================================
+        for event in pygame.event.get():
+
+            # Keluar dari permainan
+            if event.type == pygame.QUIT:
+                running = False
+
+            # Menggerakkan striker ke kiri atau kanan
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    strikerXFac = -1
+
+                if event.key == pygame.K_RIGHT:
+                    strikerXFac = 1
+
+            # Menghentikan striker ketika tombol dilepas
+            if event.type == pygame.KEYUP:
+                if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
+                    strikerXFac = 0
+
+        # ==================================
+        # 11. COLLISION CHECK (TABRAKAN)
+        # ==================================
+
+        # Memeriksa tabrakan antara striker dan bola
+        if collisionChecker(striker.getRect(), ball.getRect()):
+            ball.hit()
+
+        # Memeriksa tabrakan antara bola dan balok
+        for block in listOfBlocks[:]:
+            if collisionChecker(block.getRect(), ball.getRect()):
                 ball.hit()
-    
-            # Memeriksa tabrakan antara bola dan balok
-            for block in listOfBlocks[:]:
-                if collisionChecker(block.getRect(), ball.getRect()):
-                    ball.hit()
-                    block.hit()
-    
-                    # Menghapus balok jika health sudah habis
-                    if block.getHealth() <= 0:
-                        listOfBlocks.remove(block)
-                        score += 5
-    
-            # 12. UPDATE POSISI OBJEK
-            # Memperbarui posisi striker
-            striker.update(strikerXFac)
-    
-            # Memperbarui posisi bola
-            lifeLost = ball.update()
-    
-            # Mengurangi nyawa jika bola jatuh
-            if lifeLost:
-                lives -= 1
-                ball.reset()
-    
-            # 13. DISPLAY (MENAMPILKAN OBJEK)
-            # Menampilkan striker dan bola peach
-            striker.display()
-            ball.display()
-    
-            # Menampilkan semua balok
-            for block in listOfBlocks:
-                block.display()
-    
-            # Memperbarui tampilan layar
-            pygame.display.update()
-    
-            # Mengatur FPS permainan
-            clock.tick(FPS)
-    
-    # 14. MENJALANKAN PROGRAM
-    if __name__ == "__main__":
-        main()
-    
-        # Menutup seluruh modul Pygame
-        pygame.quit()
+                block.hit()
+
+                # Menghapus balok jika health sudah habis
+                if block.getHealth() <= 0:
+                    listOfBlocks.remove(block)
+                    score += 5
+
+        # ==================================
+        # 12. UPDATE POSISI OBJEK
+        # ==================================
+
+        # Memperbarui posisi striker
+        striker.update(strikerXFac)
+
+        # Memperbarui posisi bola
+        lifeLost = ball.update()
+
+        # Mengurangi nyawa jika bola jatuh
+        if lifeLost:
+            lives -= 1
+            ball.reset()
+
+        # ==================================
+        # 13. DISPLAY (MENAMPILKAN OBJEK)
+        # ==================================
+
+        # Menampilkan striker dan bola peach
+        striker.display()
+        ball.display()
+
+        # Menampilkan semua balok
+        for block in listOfBlocks:
+            block.display()
+
+        # Memperbarui tampilan layar
+        pygame.display.update()
+
+        # Mengatur FPS permainan
+        clock.tick(FPS)
+
+
+# ==========================================
+# 14. MENJALANKAN PROGRAM
+# ==========================================
+if __name__ == "__main__":
+    main()
+
+    # Menutup seluruh modul Pygame
+    pygame.quit()
